@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.venv/
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Data and models (do NOT commit large generated files)
+data/
+models/
+*.pkl
+*.joblib
+
+# Jupyter
+.ipynb_checkpoints
+
+# Secrets
+.env
+secrets.json
