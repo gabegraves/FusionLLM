@@ -1,25 +1,25 @@
 # Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-venv/
-env/
-.venv/
-.vscode/
-.idea/
+# __pycache__/
+# *.pyc
+# *.pyo
+# *.pyd
+# venv/
+# env/
+# .venv/
+# .vscode/
+# .idea/
 
-# macOS
-.DS_Store
+# # macOS
+# .DS_Store
 
-# Data and models (do NOT commit large generated files)
-data/
-models/
-*.pkl
-*.joblib
+# # Data and models (do NOT commit large generated files)
+# data/
+# models/
+# *.pkl
+# *.joblib
 
-# Jupyter
-.ipynb_checkpoints
+# # # Jupyter
+# .ipynb_checkpoints
 
 # Secrets
 .env

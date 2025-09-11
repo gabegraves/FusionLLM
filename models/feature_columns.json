@@ -1,0 +1,21 @@
+[
+  "avg_Z",
+  "avg_chi",
+  "avg_mass",
+  "std_atomic_radius",
+  "n_elements",
+  "contains_Cu",
+  "contains_W",
+  "frac_W",
+  "frac_Cu",
+  "frac_Fe",
+  "frac_Cr",
+  "frac_Mo",
+  "frac_Ta",
+  "frac_Nb",
+  "frac_V",
+  "frac_Ti",
+  "frac_Al",
+  "frac_Si",
+  "frac_Mn"
+]
