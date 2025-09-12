@@ -1,0 +1,122 @@
+[
+  {
+    "formula":"Al0.879452-Nb0.120548",
+    "activation_mean":1.0429143994,
+    "activation_std":0.0606795129,
+    "thermal_mean":0.4238160375,
+    "thermal_std":0.0372745016,
+    "ductility_mean":0.9273908781,
+    "ductility_std":0.0327019542,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.793701-Mo0.206299",
+    "activation_mean":1.0548512032,
+    "activation_std":0.1269883888,
+    "thermal_mean":0.4317651379,
+    "thermal_std":0.0356623666,
+    "ductility_mean":0.9518916288,
+    "ductility_std":0.0496110155,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.494737-Mo0.505263",
+    "activation_mean":1.0279595,
+    "activation_std":0.0578596933,
+    "thermal_mean":0.4196298986,
+    "thermal_std":0.0490128317,
+    "ductility_mean":0.9220076094,
+    "ductility_std":0.0963334866,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"W0.097528-Al0.902472",
+    "activation_mean":1.0738697052,
+    "activation_std":0.1453761941,
+    "thermal_mean":0.4392743631,
+    "thermal_std":0.0343551267,
+    "ductility_mean":0.9581495092,
+    "ductility_std":0.0554711406,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.744123-Mo0.255877",
+    "activation_mean":1.0789155676,
+    "activation_std":0.1525121179,
+    "thermal_mean":0.4329565088,
+    "thermal_std":0.0364709813,
+    "ductility_mean":0.9551469483,
+    "ductility_std":0.0546581258,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.741221-Mo0.258779",
+    "activation_mean":1.0793500861,
+    "activation_std":0.1540853606,
+    "thermal_mean":0.4329750733,
+    "thermal_std":0.0364598273,
+    "ductility_mean":0.9551469483,
+    "ductility_std":0.0546581258,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.453431-Mo0.546569",
+    "activation_mean":1.030034,
+    "activation_std":0.0611716065,
+    "thermal_mean":0.4202696599,
+    "thermal_std":0.0488994026,
+    "ductility_mean":0.9015270889,
+    "ductility_std":0.1060568558,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"W0.501223-Al0.498777",
+    "activation_mean":1.0688662139,
+    "activation_std":0.0979472891,
+    "thermal_mean":0.4681365763,
+    "thermal_std":0.0313714714,
+    "ductility_mean":0.8784311252,
+    "ductility_std":0.1434162866,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.531257-W0.468743",
+    "activation_mean":1.0642707339,
+    "activation_std":0.0929054393,
+    "thermal_mean":0.4582203018,
+    "thermal_std":0.0355628777,
+    "ductility_mean":0.8828413985,
+    "ductility_std":0.1398536673,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  },
+  {
+    "formula":"Al0.996868-Mn0.003132",
+    "activation_mean":1.1058789039,
+    "activation_std":0.1346662942,
+    "thermal_mean":0.423144794,
+    "thermal_std":0.0401635365,
+    "ductility_mean":0.9326176382,
+    "ductility_std":0.0313790528,
+    "reason":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\"",
+    "experiment":"",
+    "raw":"\"reason\":\"High Al fraction tends to reduce neutron activation and supports ductility; Mo increases thermal conductivity and perform a short irradiation proxy (ion-implantation) followed by hardness\/EDX to check retention.\""
+  }
+]

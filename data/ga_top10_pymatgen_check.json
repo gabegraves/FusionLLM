@@ -1,0 +1,114 @@
+[
+  {
+    "formula":"Al0.881803-Mo0.118197",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.881803,
+      "Mo":0.118197
+    }
+  },
+  {
+    "formula":"Al0.901748-Mo0.098252",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.901748,
+      "Mo":0.098252
+    }
+  },
+  {
+    "formula":"Al0.868985-Mo0.131015",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.868985,
+      "Mo":0.131015
+    }
+  },
+  {
+    "formula":"Al0.868985-Mo0.131015",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.868985,
+      "Mo":0.131015
+    }
+  },
+  {
+    "formula":"Al0.858816-Mo0.141184",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.858816,
+      "Mo":0.141184
+    }
+  },
+  {
+    "formula":"Al0.802237-Mo0.197763",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.802237,
+      "Mo":0.197763
+    }
+  },
+  {
+    "formula":"Al0.813555-Mo0.186445",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.813555,
+      "Mo":0.186445
+    }
+  },
+  {
+    "formula":"Al0.81346-Mo0.18654",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.81346,
+      "Mo":0.18654
+    }
+  },
+  {
+    "formula":"Al0.831947-Mo0.168053",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.831947,
+      "Mo":0.168053
+    }
+  },
+  {
+    "formula":"Al0.895871-Mo0.092627-Ti0.003646-V0.007856",
+    "ok":true,
+    "disallowed":[
+
+    ],
+    "el_fracs":{
+      "Al":0.895871,
+      "Mo":0.092627,
+      "Ti":0.003646,
+      "V":0.007856
+    }
+  }
+]
