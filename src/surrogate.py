@@ -26,11 +26,14 @@ DATA_FILE = os.path.join(BASE, "data", "synthetic_labels.csv")
 MODELS_DIR = os.path.join(BASE, "models")
 FEATURES_FILE = os.path.join(MODELS_DIR, "feature_columns.json")
 
-MODEL_ACT = os.path.join(MODELS_DIR, "rf_activation.pkl")
+# New physics-informed targets
+MODEL_TR = os.path.join(MODELS_DIR, "rf_transmuted.pkl")
+MODEL_RA = os.path.join(MODELS_DIR, "rf_radioactive.pkl")
 MODEL_TH = os.path.join(MODELS_DIR, "rf_thermal.pkl")
 MODEL_DU = os.path.join(MODELS_DIR, "rf_ductility.pkl")
 
-_ACT_MODEL = None
+_TR_MODEL = None
+_RA_MODEL = None
 _TH_MODEL = None
 _DU_MODEL = None
 _FEATURE_COLUMNS = None
@@ -39,7 +42,7 @@ def _ensure_models_dir():
     os.makedirs(MODELS_DIR, exist_ok=True)
 
 def _select_feature_columns(df):
-    exclude = {"id", "formula", "activation_proxy", "thermal_proxy", "ductility_proxy"}
+    exclude = {"id", "formula", "activation_proxy", "pct_transmuted", "pct_radioactive", "thermal_proxy", "ductility_proxy"}
     return [c for c in df.columns if c not in exclude]
 
 def train_surrogates(data_csv=DATA_FILE, test_size=0.15, random_state=42, n_estimators=200):
@@ -47,12 +50,21 @@ def train_surrogates(data_csv=DATA_FILE, test_size=0.15, random_state=42, n_esti
     df = pd.read_csv(data_csv)
     feature_columns = _select_feature_columns(df)
     X = df[feature_columns].values
-    y_act = df["activation_proxy"].values
+    # targets
+    # Backward compatibility: if pct_* not present, fall back to activation_proxy
+    if "pct_transmuted" in df.columns:
+        y_tr = df["pct_transmuted"].values
+    else:
+        y_tr = df["activation_proxy"].values
+    if "pct_radioactive" in df.columns:
+        y_ra = df["pct_radioactive"].values
+    else:
+        y_ra = df["activation_proxy"].values
     y_th = df["thermal_proxy"].values
     y_du = df["ductility_proxy"].values
 
-    X_train, X_test, ya_train, ya_test, yt_train, yt_test, yd_train, yd_test = train_test_split(
-        X, y_act, y_th, y_du, test_size=test_size, random_state=random_state
+    X_train, X_test, ytr_train, ytr_test, yra_train, yra_test, yt_train, yt_test, yd_train, yd_test = train_test_split(
+        X, y_tr, y_ra, y_th, y_du, test_size=test_size, random_state=random_state
     )
 
     def _train_save(y_train, y_test, out_path):
@@ -64,9 +76,13 @@ def train_surrogates(data_csv=DATA_FILE, test_size=0.15, random_state=42, n_esti
         joblib.dump(model, out_path)
         return model, mae, r2
 
-    print("Training activation model...")
-    m_act, mae_act, r2_act = _train_save(ya_train, ya_test, MODEL_ACT)
-    print(f"Activation model: MAE={mae_act:.4f}, R2={r2_act:.3f}")
+    print("Training transmuted model...")
+    m_tr, mae_tr, r2_tr = _train_save(ytr_train, ytr_test, MODEL_TR)
+    print(f"Transmuted model: MAE={mae_tr:.4f}, R2={r2_tr:.3f}")
+
+    print("Training radioactive model...")
+    m_ra, mae_ra, r2_ra = _train_save(yra_train, yra_test, MODEL_RA)
+    print(f"Radioactive model: MAE={mae_ra:.4f}, R2={r2_ra:.3f}")
 
     print("Training thermal model...")
     m_th, mae_th, r2_th = _train_save(yt_train, yt_test, MODEL_TH)
@@ -83,19 +99,21 @@ def train_surrogates(data_csv=DATA_FILE, test_size=0.15, random_state=42, n_esti
     return {
         "feature_columns": feature_columns,
         "metrics": {
-            "activation": {"mae": mae_act, "r2": r2_act},
+            "transmuted": {"mae": mae_tr, "r2": r2_tr},
+            "radioactive": {"mae": mae_ra, "r2": r2_ra},
             "thermal": {"mae": mae_th, "r2": r2_th},
             "ductility": {"mae": mae_du, "r2": r2_du},
         }
     }
 
 def load_models():
-    global _ACT_MODEL, _TH_MODEL, _DU_MODEL, _FEATURE_COLUMNS
-    if _ACT_MODEL is not None:
+    global _TR_MODEL, _RA_MODEL, _TH_MODEL, _DU_MODEL, _FEATURE_COLUMNS
+    if _TR_MODEL is not None:
         return
-    if not os.path.exists(MODEL_ACT):
+    if not (os.path.exists(MODEL_TR) and os.path.exists(MODEL_RA)):
         raise FileNotFoundError("Models not found. Run train_surrogates first.")
-    _ACT_MODEL = joblib.load(MODEL_ACT)
+    _TR_MODEL = joblib.load(MODEL_TR)
+    _RA_MODEL = joblib.load(MODEL_RA)
     _TH_MODEL = joblib.load(MODEL_TH)
     _DU_MODEL = joblib.load(MODEL_DU)
     with open(FEATURES_FILE, "r") as f:
@@ -138,14 +156,18 @@ def _rf_predict_with_tree_stats(model, X):
     return mean, std
 
 def predict_with_uncertainty(comp):
-    if _ACT_MODEL is None:
+    if _TR_MODEL is None:
         load_models()
     X = _vectorize_comp(comp)
-    a_mean, a_std = _rf_predict_with_tree_stats(_ACT_MODEL, X)
+    tr_mean, tr_std = _rf_predict_with_tree_stats(_TR_MODEL, X)
+    ra_mean, ra_std = _rf_predict_with_tree_stats(_RA_MODEL, X)
     t_mean, t_std = _rf_predict_with_tree_stats(_TH_MODEL, X)
     d_mean, d_std = _rf_predict_with_tree_stats(_DU_MODEL, X)
     return {
-        "activation": {"mean": float(a_mean[0]), "std": float(a_std[0])},
+        # Backward compatibility: treat activation == radioactive
+        "activation": {"mean": float(ra_mean[0]), "std": float(ra_std[0])},
+        "transmuted": {"mean": float(tr_mean[0]), "std": float(tr_std[0])},
+        "radioactive": {"mean": float(ra_mean[0]), "std": float(ra_std[0])},
         "thermal": {"mean": float(t_mean[0]), "std": float(t_std[0])},
         "ductility": {"mean": float(d_mean[0]), "std": float(d_std[0])}
     }

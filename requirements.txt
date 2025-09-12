@@ -7,3 +7,10 @@ transformers
 gradio
 matplotlib
 seaborn
+endf
+mendeleev
+streamlit
+google-generativeai
+altair
+requests
+scikit-image

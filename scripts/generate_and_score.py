@@ -33,8 +33,11 @@ def score_comp(comp):
                     break
         pred = predict_with_uncertainty(d)
     # scoring: adjust weights to your preference
-    score = -0.6*pred["activation"]["mean"] + 0.9*pred["thermal"]["mean"] + 0.6*pred["ductility"]["mean"]
-    score -= 0.4*(pred["activation"]["std"] + pred["thermal"]["std"] + pred["ductility"]["std"])
+    # Prefer lower radioactivity/transmutation, higher thermal/ductility
+    # Backward-compatible: activation == radioactive
+    score = -0.6*pred["radioactive"]["mean"] - 0.2*pred.get("transmuted", pred["radioactive"]).get("mean", 0)
+    score += 0.9*pred["thermal"]["mean"] + 0.6*pred["ductility"]["mean"]
+    score -= 0.4*(pred["radioactive"]["std"] + pred["thermal"]["std"] + pred["ductility"]["std"])
     return pred, score
 
 def main():
@@ -46,8 +49,15 @@ def main():
         rows.append({
             "formula": comp,
             "score": score,
+            # Maintain activation_* for downstream compatibility (radioactive)
             "activation_mean": pred["activation"]["mean"],
             "activation_std": pred["activation"]["std"],
+            # Explicit physics-informed metrics
+            "radioactive_mean": pred["radioactive"]["mean"],
+            "radioactive_std": pred["radioactive"]["std"],
+            "transmuted_mean": pred.get("transmuted", {}).get("mean", None),
+            "transmuted_std": pred.get("transmuted", {}).get("std", None),
+            # Other proxies
             "thermal_mean": pred["thermal"]["mean"],
             "thermal_std": pred["thermal"]["std"],
             "ductility_mean": pred["ductility"]["mean"],
