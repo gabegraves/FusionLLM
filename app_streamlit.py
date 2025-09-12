@@ -68,6 +68,7 @@ def load_data(path: Path) -> pd.DataFrame:
     rename = {v: k for k, v in colmap.items() if v in df.columns}
     df = df.rename(columns=rename)
     # ensure required columns exist
+    # ensure required numeric columns exist
     for k in [
         "formula",
         "score",
@@ -82,6 +83,51 @@ def load_data(path: Path) -> pd.DataFrame:
     ]:
         if k not in df.columns:
             df[k] = pd.NA
+
+    # coerce numeric columns to numeric (strings like 'None' -> NaN)
+    num_cols = [
+        "score",
+        "activation_mean","activation_std",
+        "radioactive_mean","radioactive_std",
+        "transmuted_mean","transmuted_std",
+        "thermal_mean","thermal_std",
+        "ductility_mean","ductility_std",
+    ]
+    for c in num_cols:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    # if activation_* missing but radioactive_* present, alias
+    if "activation_mean" in df.columns and "radioactive_mean" in df.columns:
+        df["activation_mean"] = df["activation_mean"].fillna(df["radioactive_mean"])
+    if "activation_std" in df.columns and "radioactive_std" in df.columns:
+        df["activation_std"] = df["activation_std"].fillna(df["radioactive_std"]) 
+
+    # fallback: predict missing columns with surrogates
+    try:
+        from src.surrogate import load_models, predict_with_uncertainty  # local import to avoid heavy import cost
+        load_models()
+        need_cols = ["activation_mean","activation_std","transmuted_mean","transmuted_std","thermal_mean","thermal_std","ductility_mean","ductility_std"]
+        missing_mask = df[need_cols].isna().any(axis=1)
+        for idx, row in df[missing_mask].iterrows():
+            comp = row.get("formula")
+            if not isinstance(comp, str) or not comp:
+                continue
+            try:
+                pred = predict_with_uncertainty(comp)
+                df.at[idx, "activation_mean"] = df.at[idx, "activation_mean"] if pd.notna(df.at[idx, "activation_mean"]) else pred["radioactive"]["mean"]
+                df.at[idx, "activation_std"] = df.at[idx, "activation_std"] if pd.notna(df.at[idx, "activation_std"]) else pred["radioactive"]["std"]
+                df.at[idx, "transmuted_mean"] = df.at[idx, "transmuted_mean"] if pd.notna(df.at[idx, "transmuted_mean"]) else pred.get("transmuted", pred["radioactive"])["mean"]
+                df.at[idx, "transmuted_std"] = df.at[idx, "transmuted_std"] if pd.notna(df.at[idx, "transmuted_std"]) else pred.get("transmuted", pred["radioactive"])["std"]
+                df.at[idx, "thermal_mean"] = df.at[idx, "thermal_mean"] if pd.notna(df.at[idx, "thermal_mean"]) else pred["thermal"]["mean"]
+                df.at[idx, "thermal_std"] = df.at[idx, "thermal_std"] if pd.notna(df.at[idx, "thermal_std"]) else pred["thermal"]["std"]
+                df.at[idx, "ductility_mean"] = df.at[idx, "ductility_mean"] if pd.notna(df.at[idx, "ductility_mean"]) else pred["ductility"]["mean"]
+                df.at[idx, "ductility_std"] = df.at[idx, "ductility_std"] if pd.notna(df.at[idx, "ductility_std"]) else pred["ductility"]["std"]
+            except Exception:
+                pass
+    except Exception:
+        # if models not available, keep as-is
+        pass
     return df
 
 
@@ -91,18 +137,30 @@ if df.empty:
 else:
     # Sidebar filters/export
     st.sidebar.header("Filters / Export")
-    min_score = st.sidebar.slider(
-        "Min score",
-        float(df["score"].min(skipna=True) if pd.api.types.is_numeric_dtype(df["score"]) else 0.0),
-        float(df["score"].max(skipna=True) if pd.api.types.is_numeric_dtype(df["score"]) else 1.0),
-        float(df["score"].quantile(0.1) if pd.api.types.is_numeric_dtype(df["score"]) else 0.0),
-    )
-    max_activation = st.sidebar.slider(
-        "Max radioactive mean (%)",
-        float(df["activation_mean"].min(skipna=True) if pd.api.types.is_numeric_dtype(df["activation_mean"]) else 10.0),
-        float(df["activation_mean"].max(skipna=True) if pd.api.types.is_numeric_dtype(df["activation_mean"]) else 0.0),
-        float(df["activation_mean"].quantile(0.9) if pd.api.types.is_numeric_dtype(df["activation_mean"]) else 10.0),
-    )
+    def _slider_vals(series: pd.Series | None, fb_min: float, fb_max: float, fb_def: float, default_quantile: float | None = None):
+        try:
+            if series is not None and pd.api.types.is_numeric_dtype(series):
+                ser = pd.to_numeric(series, errors="coerce")
+                if ser.dropna().shape[0] > 0:
+                    mn = float(ser.min(skipna=True))
+                    mx = float(ser.max(skipna=True))
+                    if default_quantile is not None:
+                        dv = float(ser.quantile(default_quantile))
+                    else:
+                        dv = float((mn + mx) / 2.0)
+                    if not (mn < mx):
+                        margin = max(1e-9, abs(mn) * 0.1 if abs(mn) > 0 else 1e-3)
+                        return mn - margin, mx + margin, dv
+                    return mn, mx, dv
+        except Exception:
+            pass
+        return fb_min, fb_max, fb_def
+
+    s_min, s_max, s_def = _slider_vals(df.get("score"), 0.0, 1.0, 0.0, default_quantile=0.1)
+    min_score = st.sidebar.slider("Min score", s_min, s_max, s_def)
+
+    a_min, a_max, a_def = _slider_vals(df.get("activation_mean"), 0.0, 1.0, 0.0, default_quantile=0.9)
+    max_activation = st.sidebar.slider("Max radioactive mean (%)", a_min, a_max, a_def)
     st.sidebar.download_button("Download CSV (shown)", df.to_csv(index=False), "top10_with_explanations.csv", "text/csv")
     st.sidebar.header("MCP Server")
     use_mcp = st.sidebar.checkbox("Use MCP server", value=False)
