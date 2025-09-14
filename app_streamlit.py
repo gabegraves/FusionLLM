@@ -37,9 +37,15 @@ def load_data(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
     # normalize column names
     def choose(cols: List[str]):
-        for c in cols:
-            if c in df.columns:
-                return c
+        # Return the first matching column name from the provided list,
+        # also accepting common merge suffixes like _x/_y
+        for base in cols:
+            if base in df.columns:
+                return base
+            if f"{base}_x" in df.columns:
+                return f"{base}_x"
+            if f"{base}_y" in df.columns:
+                return f"{base}_y"
         return None
 
     colmap = {}
@@ -161,7 +167,7 @@ else:
 
     a_min, a_max, a_def = _slider_vals(df.get("activation_mean"), 0.0, 1.0, 0.0, default_quantile=0.9)
     max_activation = st.sidebar.slider("Max radioactive mean (%)", a_min, a_max, a_def)
-    st.sidebar.download_button("Download CSV (shown)", df.to_csv(index=False), "top10_with_explanations.csv", "text/csv")
+    st.sidebar.download_button("Download CSV (shown)", f.to_csv(index=False), "top10_with_explanations.csv", "text/csv")
     st.sidebar.header("MCP Server")
     use_mcp = st.sidebar.checkbox("Use MCP server", value=False)
     mcp_url = st.sidebar.text_input("MCP URL", value=os.environ.get("MCP_URL", "http://localhost:8000"))
@@ -311,6 +317,17 @@ Context
 - Thermal proxy (mean±std): {row.get('thermal_mean')} ± {row.get('thermal_std')}
 - Ductility proxy (mean±std): {row.get('ductility_mean')} ± {row.get('ductility_std')}
 """
+                        # Clean up mojibake artifacts in prompt
+                        prompt = (
+                            prompt
+                            .replace('A�', '±')
+                            .replace('�?`', '-')
+                            .replace('�?"', '-')
+                            .replace('I"', 'delta')
+                            .replace('A~', '~')
+                            .replace('A-','x')
+                            .replace('�', '')
+                        )
                         resp = model.generate_content(prompt)
                         txt = resp.text.strip() if hasattr(resp, 'text') else str(resp)
                         st.markdown(txt)
@@ -335,6 +352,8 @@ Context
                         genai.configure(api_key=st.session_state["gemini_api_key"])
                         model = genai.GenerativeModel("gemini-2.5-flash")
                         system = f"We are discussing alloy {row['formula']} with properties: score={row.get('score')}, radioactive={row.get('activation_mean')}±{row.get('activation_std')}%, transmutation={row.get('transmuted_mean')}±{row.get('transmuted_std')}%. Provide technical, actionable answers."
+                        # sanitize any stray encoding artifacts
+                        system = system.replace('A�', '±')
                         hist = st.session_state["chat_history"] + [
                             {"role": "user", "parts": [{"text": system}]},
                             {"role": "user", "parts": [{"text": question}]},
@@ -346,7 +365,10 @@ Context
                             {"role": "user", "parts": [{"text": question}]},
                             {"role": "model", "parts": [{"text": reply}]},
                         ]
-                        st.experimental_rerun()
+                        try:
+                            st.rerun()
+                        except Exception:
+                            st.experimental_rerun()
                     except Exception as e:
                         st.warning(f"Chat failed: {e}")
 
@@ -692,6 +714,16 @@ with tab_protocol:
             md_lines.append("- Figures: gamma spectra, stress–strain, diffusivity vs T, SEM/TEM micrographs.")
             md_lines.append("- Tables: composition (ICP‑MS), mechanical/thermal stats (mean±std), activity by isotope.")
             md = "\n".join(md_lines)
+            # Clean up mojibake artifacts in rendered Markdown
+            md = (
+                md
+                .replace('A�', '±')
+                .replace('�?`', '-')
+                .replace('�?"', '-')
+                .replace('A~', '~')
+                .replace('A-', 'x')
+                .replace('�', '')
+            )
             st.markdown(md)
             st.download_button("Download protocol.json", json.dumps(protocol_json, indent=2), "protocol.json", "application/json")
             st.download_button("Download protocol.md", md, "protocol.md", "text/markdown")
